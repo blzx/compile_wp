@@ -1,4 +1,6 @@
 import '../css/index.css';
+// import html from '../index.html';
+// require('html-loader?-attributes!../index.html');
 class Polygon {
     constructor(height, width) {
         this.name = 'Polygon';

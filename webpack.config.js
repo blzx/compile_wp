@@ -11,49 +11,59 @@ module.exports = {
         // 公用css文件
         common: path.resolve(__dirname,'./src/js/publicCss.js'),
         // 主页
-        // index: path.resolve(__dirname,'./src/js/index.js'),
         index: path.resolve(__dirname,'./src/js/index.js'),
         // 列表页
-        // list: path.resolve(__dirname,'./src/js/list.js')
         list: path.resolve(__dirname,'./src/js/list.js')
     },
     output: {
         path: path.resolve(__dirname,'./dist'),
-        filename: 'js/[name].[hash:8].js'
+        filename: 'js/[name].[hash:8].js',
+        // publicPath:'http://localhost:9000/'
     },
-    // devServer: {
-    //     contentBase: path.join(__dirname, "dist"), //告诉服务器从哪里提供内容
-    //     compress: true, //启用gzip 压缩
-    //     host: 'localhost',
-    //     port: 9000,
-    //     open: true
-    // },
+    devServer: {
+        // contentBase: path.join(__dirname, "dist"), //告诉服务器从哪里提供内容
+        // compress: true, //启用gzip 压缩
+        host: 'localhost',
+        port: 9000,
+        open: true
+    },
     module: {
         rules: [
             {
-                test: /\.html$/,
-                use: [
-                    'html-loader'
-                    // {
-                    //     loader: 'html-loader',
-                    //     options: {
-                    //         attrs: [':data-src', 'img:src'], // 处理所有data-src属性对应的图片，img标签的src属性对应图片
-                    //         interpolate: 'require' // 启用插值语法，html模版中可以使用require来引入图片，html组件等等
-                    //     }
-                    // }
-                ]
-            },
-            // {
-            //     test: /\.css$/,
-            //     use: ExtractTextPlugin.extract({
-            //         fallback: "style-loader",
-            //         use: "css-loader"
-            //     })
-            // },
-            {
                 test: /\.css$/,
                 use: ["style-loader","css-loader"]
-            }
+            },
+            {
+                test: /\.jpg$/,
+                use: ['file-loader']
+            },
+            {
+                test: /\.png$/,
+                use: ['url-loader?mimetype=image/png']
+            },
+            // 处理 html 文件图片
+            {
+                test: /\.html$/i,
+                loader: 'html-loader',
+                options: {
+                    attributes: {
+                        list: [
+                            {
+                                tag: 'img',
+                                attribute: 'src',
+                                type: 'src'
+                            },
+                            {
+                                tag: 'img',
+                                attribute: 'data-src',
+                                type: 'src'
+                            }
+                        ],
+                        root: path.resolve(__dirname, './dist'),
+                    }
+                }
+                
+            },
         ]
     },
     plugins: [
