@@ -1,3 +1,10 @@
 .list {
     color: rgb(86, 83, 250)
 }
+.avator .avator_bg{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background:  url("../public/images/crane.jpg") no-repeat center;
+    background-size: cover;
+}

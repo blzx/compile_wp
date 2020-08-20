@@ -16,13 +16,18 @@ module.exports = {
         list: path.resolve(__dirname,'./src/js/list.js')
     },
     output: {
+        // 输出文件的目标路径 dist文件夹 (绝对路径)
+        // __dirname:当前文件在硬盘中（绝对路径）的目录
         path: path.resolve(__dirname,'./dist'),
-        filename: 'js/[name].[hash:8].js',
+        // filename: 'js/[name].[hash:8].js',
+        filename: 'js/[chunkhash].js'
+        // 规定服务器开始解析的目录
+        // 通过 webpack-dev-server 服务启动后资源的加载路径为 http://localhost:9000/xxx.js / http://localhost:9000/xxx.png
         // publicPath:'http://localhost:9000/'
     },
     devServer: {
         // contentBase: path.join(__dirname, "dist"), //告诉服务器从哪里提供内容
-        // compress: true, //启用gzip 压缩
+        compress: true, //启用gzip 压缩
         host: 'localhost',
         port: 9000,
         open: true
