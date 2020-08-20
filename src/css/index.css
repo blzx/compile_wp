@@ -1,5 +1,9 @@
+:root {
+    --color: lightblue;
+}
 body {
-    background: lightblue;
+    /* background: lightblue; */
+    background: var(--color);
 }
 h3 {
     text-align: center;

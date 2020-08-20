@@ -7,6 +7,8 @@ const webpack  = require('webpack')
 module.exports = {
     mode: 'none', // production | development | none
     // mode: 'production', // 会进行压缩
+    // devtool: 'none', // 代码报错后会指向打包后的目录
+    devtool: 'source-map', // 代码报错后会指向源文件位置
     entry: {
         // 公用css文件
         common: path.resolve(__dirname,'./src/js/publicCss.js'),
@@ -19,8 +21,11 @@ module.exports = {
         // 输出文件的目标路径 dist文件夹 (绝对路径)
         // __dirname:当前文件在硬盘中（绝对路径）的目录
         path: path.resolve(__dirname,'./dist'),
+        // name: 使用入口文件名 但是每次都会重新生成一个文件，文件数量越来越多
         // filename: 'js/[name].[hash:8].js',
-        filename: 'js/[chunkhash].js'
+        // 使用内部chunkhash值，但是每次都会重新生成一个文件，文件数量越来越多
+        // filename: 'js/[chunkhash].js'
+        filename: 'js/[name].js'
         // 规定服务器开始解析的目录
         // 通过 webpack-dev-server 服务启动后资源的加载路径为 http://localhost:9000/xxx.js / http://localhost:9000/xxx.png
         // publicPath:'http://localhost:9000/'
