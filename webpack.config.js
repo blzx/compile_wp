@@ -1,8 +1,10 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
-var ExtractTextPlugin = require("extract-text-webpack-plugin");
-const webpack  = require('webpack')
+// const CopyWebpackPlugin = require('copy-webpack-plugin')
+// const ExtractTextPlugin = require("extract-text-webpack-plugin");
+// const webpack  = require('webpack')
+
+const { CleanWebpackPlugin }  = require('clean-webpack-plugin');
 
 module.exports = {
     mode: 'development', // production | development | none
@@ -35,12 +37,15 @@ module.exports = {
         // filename: 'js/[name].[hash:8].js',
         // 使用内部chunkhash值，但是每次都会重新生成一个文件，文件数量越来越多
         // filename: 'js/[chunkhash].js'
-        filename: 'js/[name].js'
+        filename: 'js/[name].js',
         // 规定服务器开始解析的目录
         // 通过 webpack-dev-server 服务启动后资源的加载路径为 http://localhost:9000/xxx.js / http://localhost:9000/xxx.png
-        // publicPath:'http://localhost:9000/'
+        // publicPath: '/'
     },
-    devServer: {
+    // watch: 在 package.json 中加入watch命令，实时监听，重新打包
+    // 但浏览器不能实时重新加载，需要手动刷新，可以使用DevServer
+
+    devServer: { // 一个简单的web server 可以实时重新加载
         // 默认去根目录下寻找index（打包后的,就是配置中的 filename:index.html，默认将打包文件放到根目录下）
         // 如果没有使用index.html文件名 则需要通过contentBase指定打包目录
         contentBase: path.join(__dirname,'dist'),
@@ -99,6 +104,11 @@ module.exports = {
         // 已废弃 使用splitChunks代替
         // new webpack.optimize.CommonsChunkPlugin({}),
 
+        // 使用devserver启动时会清空dist目录；
+        // 如果使用了CleanWebpackPlugin，不要将devserver的contentBase指向dist
+        // new CleanWebpackPlugin(),
+        // new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
+
         // 生成多个HTML文件，则多次声明
         new HtmlWebpackPlugin({
             title:"module1",  //生成的html title名字，在模板文件中用  <title><%= htmlWebpackPlugin.options.title %></title>调用即可
@@ -137,7 +147,10 @@ module.exports = {
                 // 拆分范围由test规定；默认只拆分从node_modules文件夹下引入的模块（key值可修改）
                 defaultVendors: {
                     // 默认只拆分从node_modules文件夹下引入的模块
-                    test: /[\\/]js[\\/](jquery.min.js)/,
+                    // test: /[\\/]node_modules[\\/]/,
+                    // 拆分从js文件夹中导入的jquery.min.js文件
+                    // test: /[\\/]js[\\/](jquery.min.js)/,
+                    test: /[\\/](node_modules|js)[\\/]/,
                     // 权重 
                     priority: -10
                 },
