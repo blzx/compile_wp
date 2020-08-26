@@ -5,6 +5,7 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
+    /* 放在css里的图片会单独打包成一个chunk，放在HTML中的图片会由其他插件进行处理 */
     background:  url("../public/images/crane.jpg") no-repeat center;
     background-size: cover;
 }
