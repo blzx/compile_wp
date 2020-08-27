@@ -28,6 +28,14 @@ module.exports = {
         module2: path.resolve(__dirname,'./src/view/module2/index.js'),
         // module3
         module3: path.resolve(__dirname,'./src/view/module3/index.js'),
+
+        // 以下写法5.0版本支持
+        // 如果 htmlWebpackPlugin 中指定了chunks，页面中就会只引用指定的入口js文件，共享无效
+        // common: { import: './src/js/publicCss.js' },
+        // module1: { import: './src/view/module1/index.js', dependOn: 'shared' },
+        // module2: { import: './src/view/module2/index.js', dependOn: 'shared' },
+        // module3: { import: './src/view/module3/index.js', dependOn: 'shared' },
+        // shared: ['./src/js/jquery.min.js','lodash']
     },
     output: {
         // 输出文件的目标路径 dist文件夹 (绝对路径)
@@ -64,35 +72,44 @@ module.exports = {
             },
             {
                 test: /\.jpg$/,
-                use: ['file-loader']
+                use: {
+                    loader:'file-loader',
+                    options: {
+                        // 防止图片路径解析成  src="[object Module]"
+                        esModule: false
+                    }
+                }
             },
             {
                 test: /\.png$/,
                 use: ['url-loader?mimetype=image/png']
             },
+
             // 处理 html 文件图片
-            {
-                test: /\.html$/i,
-                loader: 'html-loader',
-                options: {
-                    attributes: {
-                        list: [
-                            {
-                                tag: 'img',
-                                attribute: 'src',
-                                type: 'src'
-                            },
-                            {
-                                tag: 'img',
-                                attribute: 'data-src',
-                                type: 'src'
-                            }
-                        ],
-                        root: path.resolve(__dirname, './dist'),
-                    }
-                }
+            // 为防止与 html-webpack-plugin 冲突，尽量不使用，
+            // 文件中的图片使用ejs语法引入，来处理src的问题
+            // {
+            //     test: /\.html$/i,
+            //     loader: 'html-loader',
+            //     options: {
+            //         attributes: {
+            //             list: [
+            //                 {
+            //                     tag: 'img',
+            //                     attribute: 'src',
+            //                     type: 'src'
+            //                 },
+            //                 {
+            //                     tag: 'img',
+            //                     attribute: 'data-src',
+            //                     type: 'src'
+            //                 }
+            //             ],
+            //             root: path.resolve(__dirname, './dist'),
+            //         }
+            //     }
                 
-            },
+            // },
         ]
     },
     plugins: [
@@ -110,11 +127,19 @@ module.exports = {
         // new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
 
         // 生成多个HTML文件，则多次声明
+        // new HtmlWebpackPlugin({
+        //     title: 'index',
+        //     filename: '1.html'
+        // }),
+        // new HtmlWebpackPlugin({
+        //     title: 'index',
+        //     filename: '2.html'
+        // })
         new HtmlWebpackPlugin({
             title:"module1",  //生成的html title名字，在模板文件中用  <title><%= htmlWebpackPlugin.options.title %></title>调用即可
             chunks:['common','module1'],  //引入entry中的key名字的js文件，此处为login，打包后html后会自动引入login.js文件
             filename: 'module1.html', // bulid目录下生成的html文件名
-            template: './src/module1.html', // 我们原来的index.html路径，作为模板
+            template: './src/module1.ejs', // 我们原来的index.html路径，作为模板
             inject:true,
             hash: true,
         }),
@@ -122,7 +147,7 @@ module.exports = {
             title: 'module2',
             chunks:['common','module2'],
             filename: 'module2.html',
-            template: './src/module2.html',
+            template: './src/module2.ejs',
             inject: true,
             hash: true,
         }),
@@ -130,43 +155,44 @@ module.exports = {
             title: 'module3',
             chunks:['common','module3'],
             filename: 'module3.html',
-            template: './src/module3.html',
+            template: './src/module3.ejs',
             inject: true,
             hash: true,
         })
     ],
-    optimization: {
-        splitChunks: {
-            // 第三方依赖的拆分规则 有三个值： async initial all
-            // async 从异步加载的模块里拆分第三方依赖
-            // initial 从入口文件中拆分
-            // all 以上所有(默认)
-            chunks: 'all',
+    // optimization: {
+    //     // 防止入口文件中重复引入的模块，打包后引入到各个的bundle中
+    //     splitChunks: {
+    //         // 第三方依赖的拆分规则 有三个值： async initial all
+    //         // async 从异步加载的模块里拆分第三方依赖
+    //         // initial 从入口文件中拆分
+    //         // all 以上所有(默认)
+    //         chunks: 'all',
             
-            cacheGroups: {
-                // 拆分范围由test规定；默认只拆分从node_modules文件夹下引入的模块（key值可修改）
-                defaultVendors: {
-                    // 默认只拆分从node_modules文件夹下引入的模块
-                    // test: /[\\/]node_modules[\\/]/,
-                    // 拆分从js文件夹中导入的jquery.min.js文件
-                    // test: /[\\/]js[\\/](jquery.min.js)/,
-                    test: /[\\/](node_modules|js)[\\/]/,
-                    // 权重 
-                    priority: -10
-                },
-                // 如果执行完defaultVendors后，还有符合default条件的模块需要拆分，则继续执行default。
-                // 拆分范围默认所有
-                // minChunks 根据导入模块的数量决定是否进行拆分
-                // key值可修改
-                default: {
-                    // 只要导入了其他模块就进行拆分(>=1)
-                    // minChunks: 1,
-                    minChunks: 2, // 导入两个或两个以上是拆分
-                    // 权重 -20小于上面的-10 优先走 defaultVendors
-                    priority: -20,
-                    reuseExistingChunk: true
-                }
-            }
-        }
-    }
+    //         cacheGroups: {
+    //             // 拆分范围由test规定；默认只拆分从node_modules文件夹下引入的模块（key值可修改）
+    //             defaultVendors: {
+    //                 // 默认只拆分从node_modules文件夹下引入的模块
+    //                 // test: /[\\/]node_modules[\\/]/,
+    //                 // 拆分从js文件夹中导入的jquery.min.js文件
+    //                 // test: /[\\/]js[\\/](jquery.min.js)/,
+    //                 test: /[\\/](node_modules|js)[\\/]/,
+    //                 // 权重 
+    //                 priority: -10
+    //             },
+    //             // 如果执行完defaultVendors后，还有符合default条件的模块需要拆分，则继续执行default。
+    //             // 拆分范围默认所有
+    //             // minChunks 根据导入模块的数量决定是否进行拆分
+    //             // key值可修改
+    //             default: {
+    //                 // 只要导入了其他模块就进行拆分(>=1)
+    //                 // minChunks: 1,
+    //                 minChunks: 2, // 导入两个或两个以上是拆分
+    //                 // 权重 -20小于上面的-10 优先走 defaultVendors
+    //                 priority: -20,
+    //                 reuseExistingChunk: true
+    //             }
+    //         }
+    //     }
+    // }
 }

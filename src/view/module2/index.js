@@ -1,5 +1,5 @@
 import $ from '../../js/jquery.min.js';
-import _ from 'lodash';
+// import _ from 'lodash';
 
 console.log($);
 console.log(_);
