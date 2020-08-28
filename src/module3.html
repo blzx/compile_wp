@@ -13,7 +13,10 @@
             <a href="./module1.html">查看模块1</a>
             <!-- <img src="<%= require('./public/images/bridge.jpg')%>"> -->
             <div>
+                <!-- 通过htmlWebpackPlugin处理 -->
                 <img src="<%= require('./public/images/bridge.jpg')%>" >
+                <!-- html-loader 处理 但是无法识别ejs语法 -->
+                <!-- <img src="./public/images/bridge.jpg" > -->
             </div>
         </div>
     </div>

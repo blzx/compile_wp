@@ -1,5 +1,6 @@
 import '../../css/list.css';
-import $ from '../../js/jquery.min.js';
+// import $ from '../../js/jquery.min.js';
+import $ from 'jquery';
 // import jquery from 'jquery'
 // console.log(jquery)
 

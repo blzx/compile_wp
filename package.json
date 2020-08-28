@@ -26,6 +26,7 @@
     "html-loader": "^1.1.0",
     "html-webpack-plugin": "^4.3.0",
     "lodash": "^4.17.20",
+    "mini-css-extract-plugin": "^0.11.0",
     "style-loader": "^1.2.1",
     "url-loader": "^4.1.0",
     "webpack": "^5.0.0-beta.28",

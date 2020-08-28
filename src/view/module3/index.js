@@ -1,5 +1,6 @@
 import '../../css/index.css';
-import $ from '../../js/jquery.min.js';
+// import $ from '../../js/jquery.min.js';
+import $ from 'jquery';
 // import html from '../index.html';
 // require('html-loader?-attributes!../index.html');
 // require('html-loader?{"attributes":{"list":[{"tag":"img","attribute":"src","type":"src"},{"tag":"img","attribute":"data-src","type":"src"}]}}!../index.html');
